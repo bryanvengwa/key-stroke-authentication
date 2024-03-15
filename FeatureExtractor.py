@@ -1,114 +1,63 @@
 import sqlite3
-from pynput.keyboard import Key, Listener
-import time
 import numpy as np
 
 class FeatureExtractor:
-    def __init__(self):
-        self.key_press_times = []
-        self.key_release_times = []
-        self.key_intervals = []
+    def __init__(self, db_name):
+        self.db_name = db_name
+        self.connection = None
+        self.cursor = None
 
-    def process_key_event(self, event_type, event_time):
-        if event_type == 'press':
-            self.key_press_times.append(event_time)
-        elif event_type == 'release':
-            self.key_release_times.append(event_time)
+    def connect_to_database(self):
+        # Connect to the SQLite database
+        self.connection = sqlite3.connect(self.db_name)
+        self.cursor = self.connection.cursor()
 
-    def calculate_intervals(self):
-        if len(self.key_press_times) >= 2:
-            for i in range(1, len(self.key_press_times)):
-                interval = self.key_press_times[i] - self.key_press_times[i-1]
-                self.key_intervals.append(interval)
+    def create_table(self):
+        # Create a table to store keystroke data if it doesn't exist
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS keystrokes
+                               (user_id TEXT, event_type TEXT, event_time REAL)''')
+        self.connection.commit()
 
-    def extract_features(self):
-        self.calculate_intervals()
-        features = {
-            'keypress_times': self.key_press_times,
-            'keyrelease_times': self.key_release_times,
-            'key_intervals': self.key_intervals
-        }
+    def insert_keystroke_data(self, user_id, event_type, event_time):
+        # Insert keystroke data into the table
+        self.cursor.execute('''INSERT INTO keystrokes VALUES (?, ?, ?)''', (user_id, event_type, event_time))
+        self.connection.commit()
+
+    def extract_features_from_database(self, user_id):
+        # Extract relevant features from the database for a specific user
+        self.cursor.execute('''SELECT event_time FROM keystrokes WHERE user_id = ?''', (user_id,))
+        event_times = self.cursor.fetchall()
+        event_times = [time[0] for time in event_times]  # Extract event times from the fetched data
+        # Perform feature extraction from event times (example: calculate intervals)
+        features = np.diff(event_times) if len(event_times) >= 2 else []
         return features
 
-    def store_features_in_db(self, features):
-        conn = sqlite3.connect('keystroke_features.db')
-        c = conn.cursor()
-        keypress_times = str(features['keypress_times'])
-        keyrelease_times = str(features['keyrelease_times'])
-        key_intervals = str(features['key_intervals'])
-        c.execute("INSERT INTO keystroke_features (keypress_times, keyrelease_times, key_intervals) VALUES (?, ?, ?)",
-                 (keypress_times, keyrelease_times, key_intervals))
-        conn.commit()
-        conn.close()
-
-def on_press(key):
-    try:
-        print('Key {} pressed'.format(key))
-        extractor.process_key_event('press', time.time())
-    except AttributeError:
-        pass
-
-def on_release(key):
-    if key == Key.esc:
-        extractor.process_key_event('release', time.time())
-        return False
-
-def create_database_and_table():
-    conn = sqlite3.connect('keystroke_features.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS keystroke_features
-                 (id INTEGER PRIMARY KEY, keypress_times TEXT, keyrelease_times TEXT, key_intervals TEXT)''')
-    conn.commit()
-    conn.close()
-
-create_database_and_table()
-
-extractor = FeatureExtractor()
-
-with Listener(on_press=on_press, on_release=on_release) as listener:
-    listener.join()
-
-extracted_features = extractor.extract_features()
-extractor.store_features_in_db(extracted_features)
-
-
-
-
-
-class UserTemplate:
-    def __init__(self, user_id, features):
-        self.user_id = user_id
-        self.features = features
-
-def calculate_similarity(features1, features2):
-    # Calculate Euclidean distance between two feature vectors
-    return np.linalg.norm(features1 - features2)
-
-def authenticate_user(user_templates, input_features, threshold):
-    # Compare input features to stored templates
-    for template in user_templates:
-        similarity = calculate_similarity(template.features, input_features)
-        if similarity < threshold:
-            return template.user_id
-    # If no match found
-    return None
+    def close_connection(self):
+        # Close the database connection
+        if self.connection:
+            self.connection.close()
 
 # Example usage:
-# Assume user_templates is a list of UserTemplate objects with stored features for each user
-user_templates = [UserTemplate('user1', np.array([1, 2, 3])),
-                  UserTemplate('user2', np.array([4, 5, 6])),
-                  UserTemplate('user3', np.array([7, 8, 9]))]
+if __name__ == '__main__':
+    # Create a FeatureExtractor instance
+    extractor = FeatureExtractor('keystrokes.db')
 
-# Assume input_features is the extracted features from the user attempting to authenticate
-input_features = np.array([2, 3, 4])
+    # Connect to the database
+    extractor.connect_to_database()
 
-# Set similarity threshold for authentication
-threshold = 2.0
+    # Create the table if it doesn't exist
+    extractor.create_table()
 
-# Authenticate user based on input features
-authenticated_user = authenticate_user(user_templates, input_features, threshold)
+    # Simulate keystroke data and insert it into the database
+    user_id = 'user1'
+    events = [('press', 0.0), ('release', 0.1), ('press', 0.2), ('release', 0.3)]
+    for event_type, event_time in events:
+        extractor.insert_keystroke_data(user_id, event_type, event_time)
 
-if authenticated_user:
-    print("Authenticated as:", authenticated_user)
-else:
-    print("Authentication failed.")
+    # Extract features for the user from the database
+    extracted_features = extractor.extract_features_from_database(user_id)
+    print("Extracted Features:", extracted_features)
+
+    # Close the database connection
+    extractor.close_connection()
+
