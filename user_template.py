@@ -1,5 +1,7 @@
 import sqlite3
 import numpy as np
+import string
+import random
 
 class UserTemplate:
     def __init__(self, db_name):
@@ -15,13 +17,18 @@ class UserTemplate:
     def create_table(self):
         # Create a table to store user features if it doesn't exist
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS user_features
-                               (user_id TEXT, features TEXT)''')
+                               (user_id TEXT PRIMARY KEY, features TEXT)''')
         self.connection.commit()
 
     def store_user_feature(self, user_id, features):
         # Store user features into the database
         self.cursor.execute('''INSERT INTO user_features VALUES (?, ?)''', (user_id, str(features)))
         self.connection.commit()
+
+    def generate_random_paragraph(self):
+        # Generate a random paragraph for the user to type
+        paragraph = ''.join(random.choices(string.ascii_lowercase + ' ', k=random.randint(50, 200)))
+        return paragraph
 
     def extract_user_feature(self, user_id):
         # Retrieve user features from the database
@@ -41,31 +48,9 @@ class UserTemplate:
         if self.connection:
             self.connection.close()
 
+    def generate_user_id(self):
+        # Generate a unique user ID from keystrokes (example: first 5 characters)
+        return ''.join(random.choices(string.ascii_lowercase, k=5))
+
+
 # Example usage:
-if __name__ == '__main__':
-    # Create a UserTemplate instance
-    user_template = UserTemplate('user_features.db')
-
-    # Connect to the database
-    user_template.connect_to_database()
-
-    # Create the table if it doesn't exist
-    user_template.create_table()
-
-    # Simulate user features and store them into the database
-    user_id = 'user1'
-    user_features = np.array([1, 2, 3])
-    user_template.store_user_feature(user_id, user_features)
-
-    # Retrieve user features from the database
-    retrieved_features = user_template.extract_user_feature(user_id)
-    print("Retrieved Features:", retrieved_features)
-
-    # Calculate similarity between user features
-    if retrieved_features is not None:
-        similarity = user_template.calculate_similarity(user_features, retrieved_features)
-        print("Similarity:", similarity)
-    else:
-        print("User features not found.")
-
-    # Close the
