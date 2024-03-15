@@ -1,5 +1,6 @@
 from pynput.keyboard import Key, Listener
-
+from user_template import UserTemplate
+import numpy as np
 # Define a function to handle keystroke events
 def on_press(key):
     try:
