@@ -27,7 +27,7 @@ class UserTemplate:
 
     def generate_random_paragraph(self):
         # Generate a random paragraph for the user to type
-        paragraph = ''.join(random.choices(string.ascii_lowercase + ' ', k=random.randint(50, 200)))
+        paragraph = 'The quick brown fox jumped over the lazy dogs and there was nothing to do about it so the owner of the dogs ended up selling the lazy dogs and bougth a a new breed that is a goldberg which is believed to be a special breed'
         return paragraph
 
     def extract_user_feature(self, user_id):
