@@ -59,6 +59,7 @@ if __name__ == '__main__':
 
 print("script is running ")
 def query_action(redo):
+    valid_numbers = [1,2,3]
     if redo:
         print("Please enter a valid number")
     else:
@@ -68,6 +69,10 @@ def query_action(redo):
     print("3. Sign in a user")
     print("Enter the number of your option.......")
     response = input()
+    if input not in valid_numbers:
+        response = input()
+        query_action(True)
+
     return response
 
 
@@ -76,11 +81,8 @@ def query_action(redo):
     
 
 def validate_input(input):
-    valid_numbers = [1,2,3]
+ 
     print(valid_numbers , "here is the array")
-    if input not in valid_numbers:
-        response = input()
-        query_action(True)
-
+    
     validate_input(response)
 query_action(True)
