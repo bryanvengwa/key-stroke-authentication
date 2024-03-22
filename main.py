@@ -67,6 +67,12 @@ def register_user():
     pass
 
 print("script is running ")
+
+def validate_action(action):
+    if action == 1:
+        register_user()
+
+
 def query_action(redo : bool ):
     valid_numbers = [1,2,3]
     if redo:
@@ -86,7 +92,7 @@ def query_action(redo : bool ):
     if response not in valid_numbers:
         query_action(True)
     else:    
-        print('you have entered the correct number')
+        validate_action(response)
 
     return response
 
