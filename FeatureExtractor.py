@@ -17,7 +17,7 @@ class FeatureExtractor:
         self.cursor = self.connection.cursor()
 
         # Create a table to store keystroke data if it doesn't exist
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS keystrokes
+        self.cursor.execute('''CREATE TABLE IF NOT EXISTS user_features
                                (user_id TEXT, event_type TEXT, event_time REAL)''')
         self.connection.commit()
 
@@ -56,23 +56,23 @@ class FeatureExtractor:
         if self.connection:
             self.connection.close()
 
-# Example usage:
-if __name__ == '__main__':
-    # Create a FeatureExtractor instance
-    extractor = FeatureExtractor('keystrokes.db')
+# # Example usage:
+# if __name__ == '__main__':
+#     # Create a FeatureExtractor instance
+#     extractor = FeatureExtractor('keystrokes.db')
 
-    # Start capturing keystrokes for a specific user
-    user_id = 'user1'
-    extractor.start_capture(user_id)
+#     # Start capturing keystrokes for a specific user
+#     user_id = 'user1'
+#     extractor.start_capture(user_id)
 
-    # Wait for a few seconds to capture keystrokes (replace this with your logic)
-    time.sleep(5)
+#     # Wait for a few seconds to capture keystrokes (replace this with your logic)
+#     time.sleep(5)
 
-    # Stop capturing keystrokes
+#     # Stop capturing keystrokes
 
-    # Retrieve and print keystrokes for the user from the database
-    retrieved_keystrokes = extractor.retrieve_user_keystrokes(user_id)
-    print("Retrieved Keystrokes for User:", retrieved_keystrokes)
+#     # Retrieve and print keystrokes for the user from the database
+#     retrieved_keystrokes = extractor.retrieve_user_keystrokes(user_id)
+#     print("Retrieved Keystrokes for User:", retrieved_keystrokes)
 
-    # Close the database connection
-    extractor.close_connection()
+#     # Close the database connection
+#     extractor.close_connection()

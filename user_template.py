@@ -8,7 +8,9 @@ class UserTemplate:
         self.db_name = db_name
         self.connection = None
         self.cursor = None
-
+        self.user_id = None
+        self.keystrokes = []
+        
     def connect_to_database(self):
         # Connect to the SQLite database
         self.connection = sqlite3.connect(self.db_name)
