@@ -62,7 +62,7 @@ def register_user():
     user_name = input()
     template.register_user(user_id, user_name)
     print("Now type the paragraph below")
-    paragraph = template.generate_paragraph
+    paragraph = template.generate_paragraph()
     print(paragraph)
 
     pass
