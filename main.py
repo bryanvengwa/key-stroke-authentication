@@ -8,13 +8,7 @@ template.connect_to_database()
 
 
 # Define a function to handle keystroke events
-def on_press(key):
-    try:
-        # Print the pressed key
-        print('Key {} pressed'.format(key))
-    except AttributeError:
-        # Ignore special keys
-        pass
+# 
 
 
 # Define a function to handle key release events
@@ -83,7 +77,11 @@ def query_action(redo : bool ):
     print("2. Log a user into the system")
     print("3. Sign in a user")
     print("Enter the number of your option.......")
-    response =int(input())
+    response = ''
+    try:
+        response =int(input())
+    except:
+        query_action(True)
 
     if response not in valid_numbers:
         query_action(True)
