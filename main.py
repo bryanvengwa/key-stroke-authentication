@@ -56,14 +56,15 @@ if __name__ == '__main__':
 
     # Close the database connection
     user_template.close_connection()
-
+    
 
 # if __name__ == '__main__':
 
-def register_user(dfnafasdjfnalfnafn):
+def register_user():
     print('Please Enter your username')
-    username = input()
-    template
+    user_id = template.generate_user_id()
+    user_name = input()
+    template.register_user(user_id, user_name)
 
     pass
 
