@@ -80,9 +80,9 @@ def query_action(redo):
     
     
 
-def validate_input(input):
+# def validate_input(input):
  
-    print(valid_numbers , "here is the array")
+#     print(valid_numbers , "here is the array")
     
-    validate_input(response)
-query_action(True)
+#     validate_input(response)
+# query_action(True)
