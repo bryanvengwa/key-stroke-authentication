@@ -5,6 +5,7 @@ import numpy as np
 # this is the oneTime overall connection to the userTemplate class
 template = UserTemplate('user_features.db')
 template.connect_to_database()
+template.create_table()
 
 
 # Define a function to handle keystroke events
