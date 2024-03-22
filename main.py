@@ -2,6 +2,9 @@ from pynput.keyboard import Key, Listener
 from user_template import UserTemplate
 import numpy as np
 
+# this is the oneTime overall connection to the userTemplate class
+template = UserTemplate('user_features.db')
+
 
 # Define a function to handle keystroke events
 def on_press(key):
@@ -40,7 +43,7 @@ if __name__ == '__main__':
     print("Generated User ID:", user_id)
 
     # Generate random paragraph for the user to type
-    paragraph = user_template.generate_random_paragraph()
+    paragraph = user_template.generate_paragraph()
     print("Random Paragraph for User to Type:", paragraph)
 
     # Simulate user features (random for demonstration)
@@ -57,7 +60,11 @@ if __name__ == '__main__':
 
 # if __name__ == '__main__':
 
-def register_user():
+def register_user(dfnafasdjfnalfnafn):
+    print('Please Enter your username')
+    username = input()
+    template
+
     pass
 
 print("script is running ")

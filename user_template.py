@@ -17,7 +17,7 @@ class UserTemplate:
     def create_table(self):
         # Create a table to store user features if it doesn't exist
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS user_features
-                               (user_id TEXT PRIMARY KEY, features TEXT)''')
+                               (user_id TEXT PRIMARY KEY, username, features TEXT)''')
         self.connection.commit()
 
     def store_user_feature(self, user_id, features):
@@ -51,6 +51,8 @@ class UserTemplate:
     def generate_user_id(self):
         # Generate a unique user ID from keystrokes (example: first 5 characters)
         return ''.join(random.choices(string.ascii_lowercase, k=5))
+    def  register_user(self):
+        pass
 
 
 # Example usage:
