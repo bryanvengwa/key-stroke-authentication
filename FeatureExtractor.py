@@ -1,4 +1,6 @@
 import sqlite3
+from pynput.keyboard import Key, Listener
+import time
 import numpy as np
 
 class FeatureExtractor:
@@ -6,31 +8,48 @@ class FeatureExtractor:
         self.db_name = db_name
         self.connection = None
         self.cursor = None
+        self.user_id = None
+        self.keystrokes = []
 
-    def connect_to_database(self):
+    def start_capture(self, user_id):
         # Connect to the SQLite database
         self.connection = sqlite3.connect(self.db_name)
         self.cursor = self.connection.cursor()
 
-    def create_table(self):
         # Create a table to store keystroke data if it doesn't exist
         self.cursor.execute('''CREATE TABLE IF NOT EXISTS keystrokes
                                (user_id TEXT, event_type TEXT, event_time REAL)''')
         self.connection.commit()
 
-    def insert_keystroke_data(self, user_id, event_type, event_time):
-        # Insert keystroke data into the table
-        self.cursor.execute('''INSERT INTO keystrokes VALUES (?, ?, ?)''', (user_id, event_type, event_time))
+        # Start capturing keystrokes for the specified user
+        self.user_id = user_id
+        with Listener(on_press=self.on_press, on_release=self.on_release) as listener:
+            listener.join()
+
+    def store_keystroke_data(self, event_type, event_time):
+        # Store keystroke data into the database
+        self.cursor.execute('''INSERT INTO keystrokes VALUES (?, ?, ?)''', (self.user_id, event_type, event_time))
         self.connection.commit()
 
-    def extract_features_from_database(self, user_id):
-        # Extract relevant features from the database for a specific user
-        self.cursor.execute('''SELECT event_time FROM keystrokes WHERE user_id = ?''', (user_id,))
-        event_times = self.cursor.fetchall()
-        event_times = [time[0] for time in event_times]  # Extract event times from the fetched data
-        # Perform feature extraction from event times (example: calculate intervals)
-        features = np.diff(event_times) if len(event_times) >= 2 else []
-        return features
+    def on_press(self, key):
+        # Handler for key press events
+        try:
+            # Record the key press event time
+            self.store_keystroke_data('press', time.time())
+        except AttributeError:
+            # Ignore special keys
+            pass
+
+    def on_release(self, key):
+        # Handler for key release events
+        # Record the key release event time
+        self.store_keystroke_data('release', time.time())
+
+    def retrieve_user_keystrokes(self, user_id):
+        # Retrieve keystroke data for the specified user from the database
+        self.cursor.execute('''SELECT event_type, event_time FROM keystrokes WHERE user_id = ?''', (user_id,))
+        keystrokes = self.cursor.fetchall()
+        return keystrokes
 
     def close_connection(self):
         # Close the database connection
@@ -42,22 +61,18 @@ if __name__ == '__main__':
     # Create a FeatureExtractor instance
     extractor = FeatureExtractor('keystrokes.db')
 
-    # Connect to the database
-    extractor.connect_to_database()
-
-    # Create the table if it doesn't exist
-    extractor.create_table()
-
-    # Simulate keystroke data and insert it into the database
+    # Start capturing keystrokes for a specific user
     user_id = 'user1'
-    events = [('press', 0.0), ('release', 0.1), ('press', 0.2), ('release', 0.3)]
-    for event_type, event_time in events:
-        extractor.insert_keystroke_data(user_id, event_type, event_time)
+    extractor.start_capture(user_id)
 
-    # Extract features for the user from the database
-    extracted_features = extractor.extract_features_from_database(user_id)
-    print("Extracted Features:", extracted_features)
+    # Wait for a few seconds to capture keystrokes (replace this with your logic)
+    time.sleep(5)
+
+    # Stop capturing keystrokes
+
+    # Retrieve and print keystrokes for the user from the database
+    retrieved_keystrokes = extractor.retrieve_user_keystrokes(user_id)
+    print("Retrieved Keystrokes for User:", retrieved_keystrokes)
 
     # Close the database connection
     extractor.close_connection()
-
