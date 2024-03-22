@@ -25,7 +25,7 @@ class UserTemplate:
         self.cursor.execute('''INSERT INTO user_features VALUES (?, ?)''', (user_id, str(features)))
         self.connection.commit()
 
-    def generate_random_paragraph(self):
+    def generate_paragraph(self):
         # Generate a random paragraph for the user to type
         paragraph = 'The quick brown fox jumped over the lazy dogs and there was nothing to do about it so the owner of the dogs ended up selling the lazy dogs and bougth a a new breed that is a goldberg which is believed to be a special breed'
         return paragraph
