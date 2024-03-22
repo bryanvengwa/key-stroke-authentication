@@ -68,6 +68,9 @@ def query_action(redo):
     print("3. Sign in a user")
     print("Enter the number of your option.......")
     response = input()
+    return response
+
+
 
     
     
