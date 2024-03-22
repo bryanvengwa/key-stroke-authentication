@@ -53,11 +53,10 @@ class UserTemplate:
         return ''.join(random.choices(string.ascii_lowercase, k=5))
     
     def register_user(self, user_id, user_name):
-        self.cursor.execute('''INSERT INTO user_features    (user_id,   user_name) 
-                               SELECT :user_id, :user_name 
-                           WHERE features IS NULL''',
-                       {'user_id': user_id, 'user_name': user_name})
+        self.cursor.execute('''INSERT INTO user_features (user_id, user_name) 
+                           VALUES (?, ?)''', (user_id, user_name))
         self.connection.commit()
+
 
     
 
