@@ -57,6 +57,9 @@ import numpy as np
 
 # if __name__ == '__main__':
 
+def register_user():
+    pass
+
 print("script is running ")
 def query_action(redo : bool ):
     valid_numbers = [1,2,3]
