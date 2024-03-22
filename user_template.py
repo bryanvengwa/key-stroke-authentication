@@ -2,6 +2,8 @@ import sqlite3
 import numpy as np
 import string
 import random
+from pynput.keyboard import Key, Listener
+import time
 
 class UserTemplate:
     def __init__(self, db_name):
@@ -10,11 +12,11 @@ class UserTemplate:
         self.cursor = None
         self.user_id = None
         self.keystrokes = []
-        
+
     def connect_to_database(self):
         # Connect to the SQLite database
-        self.connection = sqlite3.connect(self.db_name)
-        self.cursor = self.connection.cursor()
+        return sqlite3.connect(self.db_name)
+        # self.cursor = self.connection.cursor()
 
     def create_table(self):
         # Create a table to store user features if it doesn't exist
@@ -58,6 +60,38 @@ class UserTemplate:
         self.cursor.execute('''INSERT INTO user_features (user_id, user_name) 
                            VALUES (?, ?)''', (user_id, user_name))
         self.connection.commit()
+    
+    # #### keystroke--stuff starts here -------
+    def start_capture(self, user_id):
+        # Start capturing keystrokes for the specified user
+        self.user_id = user_id
+        with Listener(on_press=self.on_press, on_release=self.on_release) as listener:
+            listener.join()
+    
+    def on_press(self, key):
+        # Handler for key press events
+        
+        try:
+                # Check if the pressed key is the Escape key
+            if key == Key.esc:
+                self.stop_capture()  # Stop capturing if Escape key is pressed
+            else:
+                    # Record the key press event time
+                    self.store_keystroke_data('press', time.time())
+        except AttributeError:
+                # Ignore special keys
+                pass
+
+    def on_release(self, key):
+        # Handler for key release events
+        # Record the key release event time
+        self.store_keystroke_data('release', time.time())
+
+    def retrieve_user_keystrokes(self, user_id):
+        # Retrieve keystroke data for the specified user from the database
+        self.cursor.execute('''SELECT event_type, event_time FROM keystrokes WHERE user_id = ?''', (user_id,))
+        keystrokes = self.cursor.fetchall()
+        return keystrokes
 
 
     

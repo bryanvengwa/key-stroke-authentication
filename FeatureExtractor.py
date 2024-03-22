@@ -11,20 +11,20 @@ class FeatureExtractor:
         self.user_id = None
         self.keystrokes = []
 
-    def start_capture(self, user_id):
-        # Connect to the SQLite database
-        self.connection = sqlite3.connect(self.db_name)
-        self.cursor = self.connection.cursor()
+    # def start_capture(self, user_id):
+    #     # Connect to the SQLite database
+    #     self.connection = sqlite3.connect(self.db_name)
+    #     self.cursor = self.connection.cursor()
 
-        # Create a table to store keystroke data if it doesn't exist
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS user_features
-                               (user_id TEXT, event_type TEXT, event_time REAL)''')
-        self.connection.commit()
+    #     # Create a table to store keystroke data if it doesn't exist
+    #     self.cursor.execute('''CREATE TABLE IF NOT EXISTS user_features
+    #                            (user_id TEXT, event_type TEXT, event_time REAL)''')
+    #     self.connection.commit()
 
-        # Start capturing keystrokes for the specified user
-        self.user_id = user_id
-        with Listener(on_press=self.on_press, on_release=self.on_release) as listener:
-            listener.join()
+    #     # Start capturing keystrokes for the specified user
+    #     self.user_id = user_id
+    #     with Listener(on_press=self.on_press, on_release=self.on_release) as listener:
+    #         listener.join()
 
     def store_keystroke_data(self, event_type, event_time):
         # Store keystroke data into the database
