@@ -42,11 +42,11 @@ class UserTemplate:
 
 
     # keystrokes stuff
-    def store_keystroke_data(self, user_id, connection, event_type, event_time):
+    def store_keystroke_data(self, connection, event_type, event_time):
         # Store keystroke data into the database
         cursor = connection.cursor()
         cursor.execute('''INSERT INTO user_features (user_id, event_type, event_time) 
-                           VALUES (?, ?, ?)''', (user_id, event_type, event_time))
+                           VALUES (?, ?, ?)''', (self.user_id, event_type, event_time))
         connection.commit()
 
     def on_press(self, connection, event_time):
