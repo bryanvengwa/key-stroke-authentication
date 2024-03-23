@@ -67,7 +67,6 @@ class UserTemplate:
         # Start capturing keystrokes for the specified user
         self.user_id = user_id
         connection = self.connect_to_database()
-        self.create_table(connection)
         with Listener(on_press=lambda k: self.on_press(connection, time.time()),
                       on_release=lambda k: self.on_release(connection, time.time())) as listener:
             listener.join()
