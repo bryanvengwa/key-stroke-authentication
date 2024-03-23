@@ -35,9 +35,11 @@ class UserTemplate:
         return ''.join(random.choices(string.ascii_lowercase, k=5))
     
     def register_user(self, user_id, user_name):
+        # Insert a new user into the database
         self.cursor.execute('''INSERT INTO user_features (user_id, user_name) 
                            VALUES (?, ?)''', (user_id, user_name))
         self.connection.commit()
+
 
     # keystrokes stuff
     def store_keystroke_data(self, user_id, connection, event_type, event_time):
