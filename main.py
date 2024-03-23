@@ -16,7 +16,7 @@ template.create_table()
 
 if __name__ == '__main__':
         user_id = template.generate_user_id()
-        # user_name = input()
+        # user_name = input()f
         template.register_user(user_id, 'kjhgn')
         print("Now type the paragraph below")
         paragraph = template.generate_paragraph()
