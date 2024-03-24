@@ -17,6 +17,7 @@ class UserTemplate:
         # Connect to the SQLite database
         self.connection = sqlite3.connect(self.db_name)
         self.cursor = self.connection.cursor()
+        
 
     def create_table(self):
         # Create a table to store user features if it doesn't exist
@@ -65,12 +66,13 @@ class UserTemplate:
 
     def start_capture(self, user_id):
         # Start capturing keystrokes for the specified user
+
         self.user_id = user_id
-        connection = self.connect_to_database()
-        with Listener(on_press=lambda k: self.on_press(connection, time.time()),
-                      on_release=lambda k: self.on_release(connection, time.time())) as listener:
+        with Listener(on_press=lambda k: self.on_press(self.connection, time.time()),
+            on_release=lambda k: self.on_release(self.connection, time.time())) as listener:
+            connection = self.connect_to_database()
             listener.join()
-        connection.close()
+            connection.close()
 
     def retrieve_user_keystrokes(self, user_id):
         # Retrieve keystroke data for the specified user from the database
