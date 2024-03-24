@@ -50,28 +50,32 @@ class UserTemplate:
         connection.commit()
         connection.close()
 
-    def on_press(self, event_time):
+    def on_press(self, key, event_time):
         # Handler for key press events
+        if key == Key.esc:  # Check if the Escape key is pressed
+            return False  # Stop listener
         try:
             # Record the key press event time
             self.store_keystroke_data('press', event_time)
         except AttributeError:
             # Ignore special keys
             pass
+        return None
 
-    def on_release(self, event_time):
+    def on_release(self, key, event_time):
         # Handler for key release events
+        if key == Key.esc:  # Check if the Escape key is released
+            return False  # Stop listener
         # Record the key release event time
         self.store_keystroke_data('release', event_time)
+        return None
 
     def start_capture(self, user_id):
         # Start capturing keystrokes for the specified user
-
         self.user_id = user_id
-        with Listener(on_press=lambda k: self.on_press(time.time()),
-                      on_release=lambda k: self.on_release(time.time())) as listener:
+        with Listener(on_press=lambda k: self.on_press(k, time.time()),
+                      on_release=lambda k: self.on_release(k, time.time())) as listener:
             self.connect_to_database()
-
             listener.join()
             # connection.close()
 
