@@ -18,6 +18,7 @@ class UserTemplate:
         self.connection = sqlite3.connect(self.db_name)
         self.cursor = self.connection.cursor()
         return sqlite3.connect(self.db_name)
+    
 
     def create_table(self):
         # Create a table to store user features if it doesn't exist
