@@ -44,12 +44,12 @@ class UserTemplate:
     # keystrokes stuff
     def store_keystroke_data(self, event_type, event_time):
         # Store keystroke data into the database
-        connection = self.connect_to_database()  # Create a new connection
-        cursor = connection.cursor()
-        cursor.execute('''INSERT INTO user_features (user_id, event_type, event_time) 
+        self.connection = self.connect_to_database()  # Create a new connection
+        self.cursor = self.connection.cursor()
+        self.cursor.execute('''INSERT INTO user_features (user_id, event_type, event_time) 
                            VALUES (?, ?, ?)''', (self.user_id, event_type, event_time))
-        connection.commit()
-        connection.close()
+        self.connection.commit()
+      
 
     def on_press(self, key, event_time):
         # Handler for key press events
@@ -66,6 +66,7 @@ class UserTemplate:
     def on_release(self, key, event_time):
         # Handler for key release events
         if key == Key.esc:  # Check if the Escape key is released
+            self.connection.close()
             return False  # Stop listener
         # Record the key release event time
         self.store_keystroke_data('release', event_time)
@@ -74,6 +75,7 @@ class UserTemplate:
     def start_capture(self, user_id):
         # Start capturing keystrokes for the specified user
         self.user_id = user_id
+        print(self.user_id +"this is the id set to the template")
         with Listener(on_press=lambda k: self.on_press(k, time.time()),
                       on_release=lambda k: self.on_release(k, time.time())) as listener:
             self.connect_to_database()
