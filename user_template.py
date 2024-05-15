@@ -90,5 +90,64 @@ class UserTemplate:
         keystrokes = cursor.fetchall()
         connection.close()
         return keystrokes
+    
+    def get_user_id(self, user_name):
+        self.connection = self.connect_to_database()
+        cursor = self.connection.cursor()
+        cursor.execute('''SELECT user_id FROM user_features WHERE user_name = ?''', (user_name,))
+        user_id = cursor.fetchone()
+        self.connection.close()
+        if user_id:
+            return user_id[0]
+        else:
+            return None
+        
+
+    def format_button_presses(self, data):
+        """
+        Formats a list of button press data into a dictionary with separate lists for presses and releases.
+
+        Args:
+            data: A list of tuples containing button state and timestamp.
+
+        Returns:
+            A dictionary with two keys: 'presses' and 'releases', each containing a list of timestamps.
+        """
+        presses = []
+        releases = []
+        for action, timestamp in data:
+          if action == "press":
+            presses.append(timestamp)
+          else:
+            releases.append(timestamp)
+        return {"presses": presses, "releases": releases}    
+    
+    def record_keystrokes(self,):
+
+        # Initialize the keystroke dictionary
+        keystrokes = {'presses': [], 'releases': []}
+
+        # Define the key press and release event handlers
+        def on_press(key, event_time):
+            if key == Key.esc:
+                return False
+            keystrokes['presses'].append(key)
+            return None
+
+        def on_release(key, event_time):
+            if key == Key.esc:
+                self.connection.close()
+                return False
+            keystrokes['releases'].append(key)
+            return None
+
+        # Start capturing keystrokes for the specified user
+        with Listener(on_press=lambda k: on_press(k, time.time()),
+                      on_release=lambda k: on_release(k, time.time())) as listener:
+            self.connect_to_database()
+            listener.join()
+            self.connection.close()
+
+        return keystrokes
 
 # Example usage:

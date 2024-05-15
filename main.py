@@ -1,6 +1,7 @@
 from pynput.keyboard import Key, Listener
 from user_template import UserTemplate
 import numpy as np
+from utils import record_keystrokes
 
 
 template = UserTemplate('user_features.db')
@@ -9,7 +10,25 @@ template.create_table()
 
 def log_a_user():
     print('Please enter your username')
-    
+    user_name = input()
+    # get the user id for the user
+    id = template.get_user_id(user_name )
+    if id is None:
+        print('You are not yet registered')
+        print('You have to register first')
+    else:
+        print('Welcome ' + user_name )
+        print('Type in the paragraph below')
+        template.generate_paragraph()
+        formatted =  template.record_keystrokes()
+        print(formatted)
+
+
+    # user_strokes = template.retrieve_user_keystrokes(id)
+    # formatted_strokes = template.format_button_presses(user_strokes)
+    # print(formatted_strokes)
+
+
 
 
 def register_user(): 
