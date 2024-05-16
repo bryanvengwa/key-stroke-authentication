@@ -131,22 +131,19 @@ class UserTemplate:
         def on_press(key, event_time):
             if key == Key.esc:
                 return False
-            keystrokes['presses'].append(key)
+            keystrokes['presses'].append(event_time)
             return None
 
         def on_release(key, event_time):
             if key == Key.esc:
-                self.connection.close()
                 return False
-            keystrokes['releases'].append(key)
+            keystrokes['releases'].append(event_time)
             return None
 
         # Start capturing keystrokes for the specified user
         with Listener(on_press=lambda k: on_press(k, time.time()),
                       on_release=lambda k: on_release(k, time.time())) as listener:
-            self.connect_to_database()
             listener.join()
-            self.connection.close()
 
         return keystrokes
 
