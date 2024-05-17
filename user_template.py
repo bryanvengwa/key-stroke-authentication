@@ -4,7 +4,7 @@ import string
 import random
 import time
 from pynput.keyboard import Key, Listener
-
+import numpy as np from scipy.spatial.distance import euclidean from fastdtw import fastdtw  # type: ignore
 
 class UserTemplate:
     def __init__(self, db_name):
@@ -146,5 +146,23 @@ class UserTemplate:
             listener.join()
 
         return keystrokes
+    
+    def calculate_similarity(dict1, dict2):
+        # Extract press and release lists
+        presses1, releases1 = dict1['presses'], dict1['releases']
+        presses2, releases2 = dict2['presses'], dict2['releases']
+
+        # Normalize the lengths of the lists
+        presses1, presses2 = pad_list(presses1, presses2) # type: ignore
+        releases1, releases2 = pad_list(releases1, releases2) # type: ignore
+
+        # Calculate the Euclidean distances for presses and releases
+        press_distance = euclidean_distance(presses1, presses2) # type: ignore
+        release_distance = euclidean_distance(releases1, releases2) # type: ignore
+
+        # Aggregate the results (you could use a weighted average or sum)
+        total_distance = press_distance + release_distance
+
+        return total_distance
 
 # Example usage:
