@@ -4,8 +4,9 @@ import string
 import random
 import time
 from pynput.keyboard import Key, Listener
-import numpy as np from scipy.spatial.distance import euclidean from fastdtw import fastdtw  # type: ignore
-
+import numpy as np
+from scipy.spatial.distance import euclidean
+from fastdtw import fastdtw  # type: ignore
 class UserTemplate:
     def __init__(self, db_name):
         self.user_id = None
