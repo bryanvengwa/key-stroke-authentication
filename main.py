@@ -19,7 +19,7 @@ def log_a_user():
     else:
         print('Welcome ' + user_name )
         print('Type in the paragraph below')
-        template.generate_paragraph()
+        print(template.generate_paragraph())
         formatted =  template.record_keystrokes()
         print(formatted)
 
