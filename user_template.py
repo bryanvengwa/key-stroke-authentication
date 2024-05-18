@@ -6,7 +6,6 @@ import time
 from pynput.keyboard import Key, Listener
 import numpy as np
 from scipy.spatial.distance import euclidean
-from fastdtw import fastdtw  # type: ignore
 class UserTemplate:
     def __init__(self, db_name):
         self.user_id = None
@@ -148,22 +147,23 @@ class UserTemplate:
 
         return keystrokes
     
-    def calculate_similarity(dict1, dict2):
-        # Extract press and release lists
-        presses1, releases1 = dict1['presses'], dict1['releases']
-        presses2, releases2 = dict2['presses'], dict2['releases']
-
-        # Normalize the lengths of the lists
-        presses1, presses2 = pad_list(presses1, presses2) # type: ignore
-        releases1, releases2 = pad_list(releases1, releases2) # type: ignore
-
-        # Calculate the Euclidean distances for presses and releases
-        press_distance = euclidean_distance(presses1, presses2) # type: ignore
-        release_distance = euclidean_distance(releases1, releases2) # type: ignore
-
-        # Aggregate the results (you could use a weighted average or sum)
-        total_distance = press_distance + release_distance
-
-        return total_distance
-
-# Example usage:
+    def calculate_similarity(self, dict1, dict2):
+        # Check if the 'presses' and 'releases' keys exist in both dictionaries
+        if 'presses' not in dict1 or 'presses' not in dict2 or 'releases' not in dict1 or 'releases' not in dict2:
+            return False
+    
+        # Calculate the timing vectors for both dictionaries
+        timing_vector1 = np.array(dict1['releases']) - np.array(dict1['presses'])
+        timing_vector2 = np.array(dict2['releases']) - np.array(dict2['presses'])
+    
+        # Calculate the Euclidean distance between the timing vectors
+        distance = euclidean(timing_vector1, timing_vector2)
+    
+        # Set a threshold for similarity
+        threshold = 0.5  # Adjust this threshold as needed based on your data
+    
+        # Check if the distance is below the threshold
+        if distance < threshold:
+            return True
+        else:
+            return False
