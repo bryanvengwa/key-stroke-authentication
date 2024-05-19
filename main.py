@@ -23,8 +23,8 @@ def log_a_user():
         print('You are not yet registered')
         print('You have to register first')
     else:
-        print('Welcome ' + user_name )
-        print('Type in the paragraph below')
+        print('Hi' + user_name )
+        print('Type in the paragraph below to Login')
         print(template.generate_paragraph())
         logging_in_strokes =  template.record_keystrokes()
         user_strokes = template.retrieve_user_keystrokes(id)
@@ -52,7 +52,25 @@ def register_user():
     print(paragraph_2)
 
     template.start_capture(new_id)
-    print('we are passing the id ' + new_id)
+    # print('we are passing the id ' + new_id)
+
+def train_model():
+    print('Please enter your username')
+    user_name = input()
+    # get the user id for the user
+    id = template.get_user_id(user_name)
+    if id is None:
+        print("Please note !!")
+        print('You have to register first to train the model')
+    else:
+        print(template.generate_paragraph())
+        logging_in_strokes =  template.record_keystrokes()
+        user_strokes = template.format_button_presses(template.retrieve_user_keystrokes(id))
+        calculated_threshold = template.calculate_similarity(logging_in_strokes, user_strokes, )
+        print("Calculated threshold: ", calculated_threshold)
+
+    
+
 
 
 def validate_action(action):
@@ -60,6 +78,8 @@ def validate_action(action):
         register_user()
     elif action == 2:
         log_a_user()
+    elif action == 3:
+        train_model()
 
 
 def query_action(redo: bool):
