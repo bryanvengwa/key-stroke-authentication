@@ -54,6 +54,31 @@ def register_user():
     template.start_capture(new_id)
     # print('we are passing the id ' + new_id)
 
+def validate_train_action(response, threshold):
+    if response == 1:
+        pass
+    else:
+        pass
+
+def query_train(redo : bool,  threshold):
+    if redo == True:
+        print("Please enter a valid number")
+    valid_numbers = [1, 2, ]
+    print("1. Good")
+    print("2. Bad")
+
+    response = ''
+    try:
+        response = int(input())
+    except:
+        validate_train_action(True, threshold)
+
+    if response not in valid_numbers:
+        query_train(True, threshold)
+    else:
+        validate_action(response)
+
+
 def train_model():
     print('Please enter your username')
     user_name = input()
@@ -68,6 +93,9 @@ def train_model():
         user_strokes = template.format_button_presses(template.retrieve_user_keystrokes(id))
         calculated_threshold = template.calculate_similarity(logging_in_strokes, user_strokes, )
         print("Calculated threshold: ", calculated_threshold)
+        print("how do you rate your perfomance")
+        print("1. good")
+
 
     
 
