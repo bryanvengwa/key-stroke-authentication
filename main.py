@@ -1,6 +1,7 @@
 from pynput.keyboard import Key, Listener
 from user_template import UserTemplate
 import numpy as np
+from model_train import DBManager
 from utils import record_keystrokes
 
 
@@ -55,10 +56,12 @@ def register_user():
     # print('we are passing the id ' + new_id)
 
 def validate_train_action(response, threshold):
+    manager = DBManager()
     if response == 1:
-        pass
+        manager.insert_good_threshold(threshold)
+        
     else:
-        pass
+        manager.insert_bad_threshold(threshold)
 
 def query_train(redo : bool,  threshold):
     if redo == True:
