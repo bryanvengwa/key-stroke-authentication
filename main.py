@@ -70,6 +70,7 @@ def query_action(redo: bool):
         print("What do you want to do ?")
     print("1. Register a user")
     print("2. Log a user into the system")
+    print("3. Train the authentication model")
     print("Enter the number of your option.......")
     response = ''
     try:
