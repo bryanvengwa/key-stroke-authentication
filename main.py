@@ -106,8 +106,9 @@ def train_model():
         user_strokes = template.format_button_presses(template.retrieve_user_keystrokes(id))
         calculated_threshold = template.calculate_similarity(logging_in_strokes, user_strokes, )
         print("Calculated threshold: ", calculated_threshold)
-        print("how do you rate your perfomance")
-        print("1. good")
+        query_train(False, calculated_threshold)
+
+
 
 
     
