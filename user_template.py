@@ -4,8 +4,10 @@ import string
 import random
 import time
 from pynput.keyboard import Key, Listener
-import numpy as np
 from scipy.spatial.distance import euclidean
+from fastdtw import fastdtw
+import numpy as np
+import statistics
 class UserTemplate:
     def __init__(self, db_name):
         self.user_id = None
@@ -146,24 +148,47 @@ class UserTemplate:
             listener.join()
 
         return keystrokes
+    def calculate_similarity(self, dict1, dict2, threshold=0.1):
+        necessary_keys = {'presses', 'releases'}
     
-    def calculate_similarity(self, dict1, dict2):
-        # Check if the 'presses' and 'releases' keys exist in both dictionaries
-        if 'presses' not in dict1 or 'presses' not in dict2 or 'releases' not in dict1 or 'releases' not in dict2:
-            return False
-    
-        # Calculate the timing vectors for both dictionaries
-        timing_vector1 = np.array(dict1['releases']) - np.array(dict1['presses'])
-        timing_vector2 = np.array(dict2['releases']) - np.array(dict2['presses'])
-    
-        # Calculate the Euclidean distance between the timing vectors
-        distance = euclidean(timing_vector1, timing_vector2)
-    
-        # Set a threshold for similarity
-        threshold = 0.5  # Adjust this threshold as needed based on your data
-    
-        # Check if the distance is below the threshold
-        if distance < threshold:
-            return True
-        else:
-            return False
+        # Iterate over each necessary key
+        for key in necessary_keys:
+            # Check if the key exists in both dictionaries
+            if key not in dict1 or key not in dict2:
+                raise ValueError(f"One or both dictionaries do not contain the key '{key}'.")
+            
+        dict1_presses = [x for x in dict1['presses'] if x is not None]
+        dict1_releases = [x for x in dict1['releases'] if x is not None]
+        dict2_presses = [x for x in dict2['presses'] if x is not None]
+        dict2_releases = [x for x in dict2['releases'] if x is not None]
+            
+        # Get minimum length of press and release data
+        min_length_presses = min(len(dict1['presses']), len(dict2['presses']))
+        min_length_releases = min(len(dict1['releases']), len(dict2['releases']))
+
+        # Truncate longer lists to match shorter list length
+        dict1['presses'] = dict1['presses'][:min_length_presses]
+        dict1['releases'] = dict1['releases'][:min_length_releases]
+        dict2['presses'] = dict2['presses'][:min_length_presses]
+        dict2['releases'] = dict2['releases'][:min_length_releases]
+
+          # Check for empty lists after filtering
+        if len(dict1_presses) == 0 or len(dict1_releases) == 0:
+            return None  # Indicate insufficient data for comparison
+        
+        # Calculate similarity scores using filtered lists
+        press_similarities = []
+        release_similarities = []
+        for i in range(min(len(dict1_presses), len(dict2_presses))):
+            press_similarities.append(abs(dict1_presses[i] - dict2_presses[i]))
+        for i in range(min(len(dict1_releases), len(dict2_releases))):
+            release_similarities.append(abs(dict1_releases[i] - dict2_releases[i]))
+        
+        # Use appropriate similarity metric (e.g., median absolute deviation)
+        press_similarity = statistics.median(press_similarities)
+        release_similarity = statistics.median(release_similarities)
+        
+        # Combine similarity scores (weighted average or other method)
+        combined_similarity = (press_similarity + release_similarity) / 2
+        
+        return combined_similarity
