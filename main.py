@@ -3,7 +3,7 @@ from user_template import UserTemplate
 import numpy as np
 from model_train import DBManager
 from utils import record_keystrokes
-
+import os
 
 template = UserTemplate('user_features.db')
 template.connect_to_database()
@@ -63,10 +63,18 @@ def validate_train_action(response, threshold):
     else:
         manager.insert_bad_threshold(threshold)
 
+
 def query_train(redo : bool,  threshold):
+    if os.name == 'nt':
+        os.system('cls')
+    else:
+        os.system('clear')
+
     if redo == True:
         print("Please enter a valid number")
     valid_numbers = [1, 2, ]
+    print('calculated threshold = :' , threshold)
+    print("How do you rate your typing experience :")
     print("1. Good")
     print("2. Bad")
 
@@ -76,10 +84,12 @@ def query_train(redo : bool,  threshold):
     except:
         validate_train_action(True, threshold)
 
+
     if response not in valid_numbers:
         query_train(True, threshold)
     else:
         validate_action(response)
+
 
 
 def train_model():
