@@ -5,9 +5,9 @@ class DBManager:
         # Connect to the SQLite database (or create it if it doesn't exist)
         self.conn = sqlite3.connect('training_data.db')
         self.cursor = self.conn.cursor()
+        self.create_table()
         
         # Ensure the table exists
-        self.create_table()
 
     def create_table(self):
         """Create the table if it doesn't exist."""
@@ -36,3 +36,18 @@ class DBManager:
         """Retrieve records based on a given condition."""
         self.cursor.execute(condition)
         return self.cursor.fetchall()
+    
+    def calculate_average_good_threshold(self):
+        """Calculate and return the average of all good thresholds."""
+        # Fetch all records
+        records = self.get_all_records()
+        
+        # Extract good thresholds
+        good_thresholds = [record[1] for record in records]
+        
+        # Calculate the average
+        if len(good_thresholds) > 0:
+            average = sum(good_thresholds) / len(good_thresholds)
+            return average
+        else:
+            return None
